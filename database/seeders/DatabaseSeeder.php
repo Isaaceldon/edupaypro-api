@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
             'firstname' => 'Super',
             'lastname'  => 'Admin',
             'email'     => 'admin@edupaypro.bj',
-            'password'  => Hash::make('Admin@2025!'),
+            'password'  => Hash::make('password'),
             'role'      => 'super_admin',
             'is_active' => true,
         ]);
@@ -69,7 +69,7 @@ class DatabaseSeeder extends Seeder
             'firstname' => 'Jean-Pierre',
             'lastname'  => 'KOSSOU',
             'email'     => 'directeur@excellence.bj',
-            'password'  => Hash::make('Demo@2025!'),
+            'password'  => Hash::make('password'),
             'role'      => 'director',
         ]);
 
@@ -79,7 +79,7 @@ class DatabaseSeeder extends Seeder
             'firstname' => 'Marie',
             'lastname'  => 'AZONKPONON',
             'email'     => 'comptable@excellence.bj',
-            'password'  => Hash::make('Demo@2025!'),
+            'password'  => Hash::make('password'),
             'role'      => 'accountant',
         ]);
 
@@ -89,7 +89,7 @@ class DatabaseSeeder extends Seeder
             'firstname' => 'Kofi',
             'lastname'  => 'ADJOVI',
             'email'     => 'enseignant@excellence.bj',
-            'password'  => Hash::make('Demo@2025!'),
+            'password'  => Hash::make('password'),
             'role'      => 'teacher',
         ]);
 
@@ -167,8 +167,8 @@ class DatabaseSeeder extends Seeder
         $this->command->info('✅  Seeder terminé !');
         $this->command->info('');
         $this->command->info('  Super Admin  : admin@edupaypro.bj       / Admin@2025!');
-        $this->command->info('  Directeur    : directeur@excellence.bj  / Demo@2025!');
-        $this->command->info('  Comptable    : comptable@excellence.bj  / Demo@2025!');
-        $this->command->info('  Enseignant   : enseignant@excellence.bj / Demo@2025!');
+        $this->command->info('  Directeur    : directeur@excellence.bj  / password');
+        $this->command->info('  Comptable    : comptable@excellence.bj  / password');
+        $this->command->info('  Enseignant   : enseignant@excellence.bj / password');
     }
 }

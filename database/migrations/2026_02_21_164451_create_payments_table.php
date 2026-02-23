@@ -40,7 +40,7 @@ return new class extends Migration
             $table->timestamp('cancelled_at')->nullable();
             $table->foreignUuid('cancelled_by')->nullable()->constrained('users');
 
-            $table->timestamp('paid_at');
+            $table->timestamp('paid_at')->nullable();
             $table->text('notes')->nullable();
 
             $table->timestamps();
