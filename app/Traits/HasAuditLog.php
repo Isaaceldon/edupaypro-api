@@ -34,7 +34,7 @@ trait HasAuditLog
         try {
             AuditLog::create([
                 'user_id'    => Auth::id(),
-                'tenant_id'  => $model->tenant_id ?? app('current_tenant_id'),
+                'tenant_id'  => $model->tenant_id ?? app('current_tenant_id', null),
                 'action'     => strtolower(class_basename($model)) . '.' . $event,
                 'model_type' => get_class($model),
                 'model_id'   => $model->getKey(),

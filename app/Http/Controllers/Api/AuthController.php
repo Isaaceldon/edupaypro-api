@@ -178,4 +178,52 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Mot de passe modifié avec succès.']);
     }
+
+    /**
+     * POST /api/v1/auth/forgot-password
+     * Envoie un email de réinitialisation de mot de passe.
+     */
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $status = \Illuminate\Support\Facades\Password::sendResetLink(
+            $request->only('email')
+        );
+
+        // Toujours retourner 200 pour ne pas divulguer l'existence du compte
+        return response()->json([
+            'message' => 'Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.',
+        ]);
+    }
+
+    /**
+     * POST /api/v1/auth/reset-password
+     * Réinitialise le mot de passe avec le token reçu par email.
+     */
+    public function resetPassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'token'                 => 'required|string',
+            'email'                 => 'required|email',
+            'password'              => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required|string',
+        ]);
+
+        $status = \Illuminate\Support\Facades\Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill(['password' => Hash::make($password)])->save();
+                $user->tokens()->delete();
+            }
+        );
+
+        if ($status === \Illuminate\Support\Facades\Password::PASSWORD_RESET) {
+            return response()->json(['message' => 'Mot de passe réinitialisé avec succès.']);
+        }
+
+        return response()->json([
+            'message' => 'Le lien de réinitialisation est invalide ou expiré.',
+        ], 422);
+    }
 }

@@ -30,6 +30,9 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
         Route::post('login',    [AuthController::class, 'login']);
+        // Mot de passe oublié / réinitialisation (public)
+        Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::post('reset-password',  [AuthController::class, 'resetPassword']);
 
         // Routes protégées par Sanctum
         Route::middleware('auth:sanctum')->group(function () {
@@ -50,9 +53,10 @@ Route::prefix('v1')->group(function () {
 
         // ── MODULE A — Gestion école & utilisateurs ─────────────────────
         Route::prefix('schools')->group(function () {
-            Route::get('current',    [SchoolController::class, 'show']);
-            Route::put('current',    [SchoolController::class, 'update']);
-            Route::post('logo',      [SchoolController::class, 'uploadLogo']);
+            Route::get('current',         [SchoolController::class, 'show']);
+            Route::put('current',         [SchoolController::class, 'update']);
+            Route::post('logo',           [SchoolController::class, 'uploadLogo']);
+            Route::post('whatsapp/test',  [SchoolController::class, 'testWhatsapp']);
         });
 
         Route::apiResource('academic-years', AcademicYearController::class);

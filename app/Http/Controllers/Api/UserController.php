@@ -23,24 +23,47 @@ class UserController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        $isSendInvite = (bool) $request->input('send_invite', false);
+
         $data = $request->validate([
             'firstname' => ['required', 'string', 'max:100'],
             'lastname'  => ['required', 'string', 'max:100'],
             'email'     => ['required', 'email', 'unique:users,email'],
             'phone'     => ['nullable', 'string', 'max:20'],
             'role'      => ['required', Rule::in(['director', 'accountant', 'teacher'])],
-            'password'  => ['required', 'string', 'min:8'],
+            'password'  => $isSendInvite ? ['nullable'] : ['required', 'string', 'min:8'],
         ]);
+
+        // Flux invitation : générer un mot de passe temporaire et envoyer un email
+        $temporaryPassword = $isSendInvite ? \Illuminate\Support\Str::random(16) : $data['password'];
 
         $user = User::create([
-            ...$data,
-            'tenant_id' => $request->user()->tenant_id,
-            'school_id' => $request->user()->school_id,
-            'password'  => Hash::make($data['password']),
+            'firstname'   => $data['firstname'],
+            'lastname'    => $data['lastname'],
+            'email'       => $data['email'],
+            'phone'       => $data['phone'] ?? null,
+            'role'        => $data['role'],
+            'tenant_id'   => $request->user()->tenant_id,
+            'school_id'   => $request->user()->school_id,
+            'password'    => Hash::make($temporaryPassword),
+            'invite_token'=> $isSendInvite ? \Illuminate\Support\Str::random(32) : null,
+            'is_active'   => !$isSendInvite, // Inactif jusqu'à activation via lien
         ]);
 
+        // Envoyer l'email d'invitation
+        if ($isSendInvite) {
+            try {
+                \Illuminate\Support\Facades\Password::sendResetLink(['email' => $user->email]);
+            } catch (\Exception $e) {
+                // Email non bloquant — l'utilisateur peut être créé même si l'email échoue
+                \Illuminate\Support\Facades\Log::warning("Invitation email failed for user {$user->id}: " . $e->getMessage());
+            }
+        }
+
         return response()->json([
-            'message' => 'Utilisateur créé.',
+            'message' => $isSendInvite
+                ? "Invitation envoyée à {$user->email}."
+                : 'Utilisateur créé.',
             'data'    => new UserResource($user),
         ], 201);
     }

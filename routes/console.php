@@ -25,7 +25,7 @@ Schedule::call(function () {
 Schedule::call(function () {
     $dispatched = app(ReminderService::class)->dispatchDue();
     if ($dispatched > 0) \Illuminate\Support\Facades\Log::info("Dispatched {$dispatched} reminders.");
-})->cron('0 7-20 * * *')->name('dispatch-reminders')->withoutOverlapping();
+})->hourlyBetween('07:00', '20:00')->name('dispatch-reminders')->withoutOverlapping();
 
 // ── Recalcul des scores de risque (toutes les nuits à 2h) ─────────────────
 Schedule::call(function () {
